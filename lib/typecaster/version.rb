@@ -1,0 +1,3 @@
+module Typecaster
+  VERSION = "0.0.1"
+end
