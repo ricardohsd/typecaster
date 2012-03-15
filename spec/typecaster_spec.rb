@@ -28,22 +28,38 @@ class ObjectFormatter
 end
 
 describe Typecaster do
-  subject do
-    ObjectFormatter.new(:name => "Ricardo", :age => 23)
+  context "without values" do
+    subject do
+      ObjectFormatter.new
+    end
+
+    it "should return row" do
+      subject.to_row.should eq "*    "
+    end
   end
 
-  it "should return formatted name" do
-    subject.name.should eq "Ricardo   "
-    subject.attributes[:name].should eq "Ricardo   "
-  end
+  context "with values" do
+    subject do
+      ObjectFormatter.new(:name => "Ricardo", :age => 23)
+    end
 
-  it "should return formatted age" do
-    subject.age.should eq "023"
-    subject.attributes[:age].should eq "023"
-  end
+    it "should return formatted name" do
+      subject.name.should eq "Ricardo   "
+      subject.attributes[:name].should eq "Ricardo   "
+    end
 
-  it "should return identification with default value" do
-    subject.identification.should eq "*    "
-    subject.attributes[:identification].should eq "*    "
+    it "should return formatted age" do
+      subject.age.should eq "023"
+      subject.attributes[:age].should eq "023"
+    end
+
+    it "should return identification with default value" do
+      subject.identification.should eq "*    "
+      subject.attributes[:identification].should eq "*    "
+    end
+
+    it "should return row" do
+      subject.to_row.should eq "Ricardo   023*    "
+    end
   end
 end

@@ -39,6 +39,12 @@ module Typecaster
     attributes.each do |key, value|
       send "#{key}=", value
     end
+
+    raw_attributes.each do |name, attributes|
+      if attributes.has_key?(:default)
+        define_instance_variable(name, attributes[:default])
+      end
+    end
   end
 
   def attributes
