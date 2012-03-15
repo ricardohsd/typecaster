@@ -35,6 +35,12 @@ module Typecaster
     end
   end
 
+  def initialize(attributes={})
+    attributes.each do |key, value|
+      send "#{key}=", value
+    end
+  end
+
   def attributes
     @attributes ||= self.class.attributes
   end

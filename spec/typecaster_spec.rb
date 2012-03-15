@@ -29,17 +29,15 @@ end
 
 describe Typecaster do
   subject do
-    ObjectFormatter.new
+    ObjectFormatter.new(:name => "Ricardo", :age => 23)
   end
 
   it "should return formatted name" do
-    subject.name = "Ricardo"
     subject.name.should eq "Ricardo   "
     subject.attributes[:name].should eq "Ricardo   "
   end
 
   it "should return formatted age" do
-    subject.age = 23
     subject.age.should eq "023"
     subject.attributes[:age].should eq "023"
   end
