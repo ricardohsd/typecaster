@@ -40,7 +40,7 @@ describe Typecaster do
 
   context "with values" do
     subject do
-      ObjectFormatter.new(:name => "Ricardo", :age => 23)
+      ObjectFormatter.new(:name => "Ricardo", :age => 23, :identification => "R")
     end
 
     it "should return formatted name" do
@@ -54,12 +54,12 @@ describe Typecaster do
     end
 
     it "should return identification with default value" do
-      subject.identification.should eq "*    "
-      subject.attributes[:identification].should eq "*    "
+      subject.identification.should eq "R    "
+      subject.attributes[:identification].should eq "R    "
     end
 
     it "should return row" do
-      subject.to_row.should eq "Ricardo   023*    "
+      subject.to_row.should eq "Ricardo   023R    "
     end
   end
 end
