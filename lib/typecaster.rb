@@ -61,22 +61,14 @@ module Typecaster
 
   private
 
-  def typecaster
-    {}
-  end
-
-  def typecasted_attribute(attribute_name, options)
-    type = options[:type]
-    typecast_attribute(type).call(options[:value], options)
-  end
-
-  def typecast_attribute(type)
-    typecaster[type].new if typecaster
+  def typecasted_attribute(options)
+    klass = options[:class]
+    klass.new.call(options[:value], options)
   end
 
   def define_instance_variable(name, val)
     raw_attributes[name][:value] = val
-    val = typecasted_attribute(name, raw_attributes[name])
+    val = typecasted_attribute(raw_attributes[name])
     attributes[name] = val
     instance_variable_set("@#{name}", val)
   end

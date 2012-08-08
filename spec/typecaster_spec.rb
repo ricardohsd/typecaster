@@ -15,16 +15,9 @@ end
 class ObjectFormatter
   include Typecaster
 
-  attribute :name, :type => "string", :size => 10
-  attribute :age, :type => "integer", :size => 3
-  attribute :identification, :type => "string", :size => 5, :default => "*"
-
-  def typecaster
-    {
-      "string"  => StringTypecaster,
-      "integer" => IntegerTypecaster
-    }
-  end
+  attribute :name, :size => 10, :class => StringTypecaster
+  attribute :age, :size => 3, :class => IntegerTypecaster
+  attribute :identification, :size => 5, :class => StringTypecaster, :default => "*"
 end
 
 describe Typecaster do
