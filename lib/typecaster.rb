@@ -1,8 +1,9 @@
-require "active_support"
 require "typecaster/version"
 
 module Typecaster
-  extend ActiveSupport::Concern
+  def self.included(base)
+    base.extend ClassMethods
+  end
 
   module ClassMethods
     def attribute(name, options = {})
