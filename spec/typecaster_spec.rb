@@ -27,7 +27,7 @@ describe Typecaster do
     end
 
     it "should return formatted values" do
-      subject.to_s.should eq "*    "
+      expect(subject.to_s).to eq "*    "
     end
   end
 
@@ -37,19 +37,19 @@ describe Typecaster do
     end
 
     it "should return formatted name" do
-      subject.attributes[:name].should eq "Ricardo   "
+      expect(subject.attributes[:name]).to eq "Ricardo   "
     end
 
     it "should return formatted age" do
-      subject.attributes[:age].should eq "023"
+      expect(subject.attributes[:age]).to eq "023"
     end
 
     it "should return identification with default value" do
-      subject.attributes[:identification].should eq "R    "
+      expect(subject.attributes[:identification]).to eq "R    "
     end
 
     it "should return formatted values" do
-      subject.to_s.should eq "Ricardo   023R    "
+      expect(subject.to_s).to eq "Ricardo   023R    "
     end
   end
 end
