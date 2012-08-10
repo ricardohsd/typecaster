@@ -5,45 +5,29 @@ module Typecaster
   extend ActiveSupport::Concern
 
   module ClassMethods
-    def attribute(name, options={})
+    def attribute(name, options = {})
       attribute_name = name.to_sym
 
-      raw_attributes[attribute_name] = options
+      attributes_options[attribute_name] = options
       attributes[attribute_name] = nil
-
-      define_method(name) do
-        if instance_variable_defined?("@#{name}")
-          instance_variable_get("@#{name}")
-        elsif raw_attributes[attribute_name].has_key?(:default)
-          define_instance_variable(name, raw_attributes[attribute_name][:default])
-        else
-          define_instance_variable(name, nil)
-        end
-      end
-
-      define_method("#{name}=") do |val|
-        define_instance_variable(name, val)
-      end
     end
 
     def attributes
       @attributes ||= Hash.new
     end
 
-    def raw_attributes
-      @raw_attributes ||= Hash.new
+    def attributes_options
+      @attributes_options ||= Hash.new
     end
   end
 
-  def initialize(attributes={})
-    raw_attributes.each do |name, attributes|
-      if attributes.has_key?(:default)
-        define_instance_variable(name, attributes[:default])
-      end
+  def initialize(params = {})
+    attributes_with_default.each do |key, options|
+      define_value(key, options[:default])
     end
 
-    attributes.each do |key, value|
-      send "#{key}=", value
+    params.each do |key, value|
+      define_value(key, value)
     end
   end
 
@@ -51,25 +35,28 @@ module Typecaster
     @attributes ||= self.class.attributes
   end
 
-  def raw_attributes
-    @raw_attributes ||= self.class.raw_attributes
-  end
-
-  def to_row
+  def to_s
     attributes.values.join("")
   end
 
   private
+
+  def attributes_options
+    @attributes_options ||= self.class.attributes_options
+  end
+
+  def attributes_with_default
+    attributes_options.select { |key, options| options.has_key?(:default) }
+  end
 
   def typecasted_attribute(options)
     klass = options[:class]
     klass.new.call(options[:value], options)
   end
 
-  def define_instance_variable(name, val)
-    raw_attributes[name][:value] = val
-    val = typecasted_attribute(raw_attributes[name])
+  def define_value(name, val)
+    attributes_options[name][:value] = val
+    val = typecasted_attribute(attributes_options[name])
     attributes[name] = val
-    instance_variable_set("@#{name}", val)
   end
 end

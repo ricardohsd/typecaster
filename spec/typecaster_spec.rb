@@ -26,8 +26,8 @@ describe Typecaster do
       ObjectFormatter.new
     end
 
-    it "should return row" do
-      subject.to_row.should eq "*    "
+    it "should return formatted values" do
+      subject.to_s.should eq "*    "
     end
   end
 
@@ -37,22 +37,19 @@ describe Typecaster do
     end
 
     it "should return formatted name" do
-      subject.name.should eq "Ricardo   "
       subject.attributes[:name].should eq "Ricardo   "
     end
 
     it "should return formatted age" do
-      subject.age.should eq "023"
       subject.attributes[:age].should eq "023"
     end
 
     it "should return identification with default value" do
-      subject.identification.should eq "R    "
       subject.attributes[:identification].should eq "R    "
     end
 
-    it "should return row" do
-      subject.to_row.should eq "Ricardo   023R    "
+    it "should return formatted values" do
+      subject.to_s.should eq "Ricardo   023R    "
     end
   end
 end
