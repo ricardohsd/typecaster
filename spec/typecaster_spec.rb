@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-class StringTypecaster
-  def call(value, options)
+module StringTypecaster
+  def self.call(value, options)
     value.to_s.ljust(options[:size], " ")
   end
 end
 
-class IntegerTypecaster
-  def call(value, options)
+module IntegerTypecaster
+  def self.call(value, options)
     value.to_s.rjust(options[:size], "0")
   end
 end

@@ -52,12 +52,12 @@ module Typecaster
 
   def typecasted_attribute(options)
     klass = options[:class]
-    klass.new.call(options[:value], options)
+    klass.call(options[:value], options)
   end
 
-  def define_value(name, val)
-    attributes_options[name][:value] = val
-    val = typecasted_attribute(attributes_options[name])
-    attributes[name] = val
+  def define_value(name, value)
+    attributes_options[name][:value] = value
+    value = typecasted_attribute(attributes_options[name])
+    attributes[name] = value
   end
 end
