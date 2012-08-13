@@ -20,6 +20,19 @@ module Typecaster
     def attributes_options
       @attributes_options ||= Hash.new
     end
+
+    def parse(text)
+      attributes_options.map do |attribute, options|
+        { attribute => parse_attribute(text.slice!(0...options[:size]), options) }
+      end
+    end
+
+    private
+
+    def parse_attribute(value, options)
+      klass = options[:class]
+      klass.parse(value)
+    end
   end
 
   def initialize(params = {})
