@@ -69,7 +69,7 @@ describe Typecaster do
     end
 
     it "should parse text" do
-      expect(ObjectFormatter.parse(text)).to eq [{ :name => "Ricardo" }, { :age => 23.0 }, { :identification => "R" }]
+      expect(ObjectFormatter.parse(text)).to eq({ :name => "Ricardo", :age => 23.0, :identification => "R" })
     end
   end
 end

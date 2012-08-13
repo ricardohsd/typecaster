@@ -22,9 +22,11 @@ module Typecaster
     end
 
     def parse(text)
-      attributes_options.map do |attribute, options|
-        { attribute => parse_attribute(text.slice!(0...options[:size]), options) }
+      result = Hash.new
+      attributes_options.each do |attribute, options|
+        result[attribute] = parse_attribute(text.slice!(0...options[:size]), options)
       end
+      result
     end
 
     private
