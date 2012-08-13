@@ -32,9 +32,9 @@ Here's how to use it:
   class ProductFormatter
     include Typecaster
 
-    attribute :name, :size => 10, :class => StringTypeCaster
-    attribute :price, :size => 8, :class => NumberTypeCaster
-    attribute :code, :size => 6, :class => StringTypeCaster
+    attribute :name, :size => 10, :class => StringTypecaster
+    attribute :price, :size => 8, :class => NumberTypecaster
+    attribute :code, :size => 6, :class => StringTypecaster
   end
 
   product = ProductFormatter.new(:name => 'Coca', :price => '25.0', :code => '6312')
