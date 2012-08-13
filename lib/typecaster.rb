@@ -1,4 +1,5 @@
 require "typecaster/version"
+require "typecaster/parser"
 
 module Typecaster
   def self.included(base)
