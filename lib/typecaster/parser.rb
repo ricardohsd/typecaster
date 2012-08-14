@@ -6,7 +6,7 @@ module Typecaster
 
     module ClassMethods
       def parser(name, options = {})
-        parser_name = "#{name}".to_sym
+        parser_name = name.to_sym
         parsers_options[parser_name] = options
         parsers[parser_name] = nil
       end
