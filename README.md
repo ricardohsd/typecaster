@@ -106,10 +106,10 @@ class MyFileParser
   parser :footer, :with => MyFileFooter, :identifier => '9'
 end
 
-MyFileParser.parse(File.new('my_file.txt')
+MyFileParser.parse(File.new('my_file.txt'))
 ```
 
-its results in an hash, with keys :header, :rows and :footer, :rows will be an array, you can also use the same object to generate the file. Try it by yourself :)
+Its results in a hash, with keys the following keys: header, rows and footer. The key 'rows' will be an array.
 
 ## Contributing
 
