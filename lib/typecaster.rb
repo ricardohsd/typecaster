@@ -33,7 +33,7 @@ module Typecaster
     private
 
     def parse_attribute(value, options)
-      klass = options[:class]
+      klass = options[:caster]
       klass.parse(value)
     end
   end
@@ -67,7 +67,7 @@ module Typecaster
   end
 
   def typecasted_attribute(options)
-    klass = options[:class]
+    klass = options[:caster]
     klass.call(options[:value], options)
   end
 

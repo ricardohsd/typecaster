@@ -23,9 +23,9 @@ end
 class ObjectFormatter
   include Typecaster
 
-  attribute :name, :size => 10, :class => StringTypecaster
-  attribute :age, :size => 3, :class => IntegerTypecaster
-  attribute :identification, :size => 5, :class => StringTypecaster, :default => "*"
+  attribute :name, :size => 10, :caster => StringTypecaster
+  attribute :age, :size => 3, :caster => IntegerTypecaster
+  attribute :identification, :size => 5, :caster => StringTypecaster, :default => "*"
 end
 
 describe Typecaster do

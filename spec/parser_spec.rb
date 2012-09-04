@@ -15,27 +15,27 @@ end
 class ObjectHeader
   include Typecaster
 
-  attribute :identifier, :size => 1, :class => StringTypecaster
-  attribute :text, :size => 20, :class => StringTypecaster
-  attribute :row_number, :size => 6, :class => IntegerTypecaster
+  attribute :identifier, :size => 1, :caster => StringTypecaster
+  attribute :text, :size => 20, :caster => StringTypecaster
+  attribute :row_number, :size => 6, :caster => IntegerTypecaster
 end
 
 class ObjectRow
   include Typecaster
 
-  attribute :identifier, :size => 1, :class => StringTypecaster
-  attribute :amount, :size => 5, :class => IntegerTypecaster
-  attribute :person, :size => 15, :class => StringTypecaster
-  attribute :row_number, :size => 6, :class => IntegerTypecaster
+  attribute :identifier, :size => 1, :caster => StringTypecaster
+  attribute :amount, :size => 5, :caster => IntegerTypecaster
+  attribute :person, :size => 15, :caster => StringTypecaster
+  attribute :row_number, :size => 6, :caster => IntegerTypecaster
 end
 
 class ObjectFooter
   include Typecaster
 
-  attribute :identifier, :size => 1, :class => StringTypecaster
-  attribute :total, :size => 5, :class => IntegerTypecaster
-  attribute :filler, :size => 15, :class => StringTypecaster
-  attribute :row_number, :size => 6, :class => IntegerTypecaster
+  attribute :identifier, :size => 1, :caster => StringTypecaster
+  attribute :total, :size => 5, :caster => IntegerTypecaster
+  attribute :filler, :size => 15, :caster => StringTypecaster
+  attribute :row_number, :size => 6, :caster => IntegerTypecaster
 end
 
 class ObjectFile
