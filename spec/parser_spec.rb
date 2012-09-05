@@ -15,27 +15,40 @@ end
 class ObjectHeader
   include Typecaster
 
-  attribute :identifier, :size => 1, :caster => StringTypecaster
-  attribute :text, :size => 20, :caster => StringTypecaster
-  attribute :row_number, :size => 6, :caster => IntegerTypecaster
+  attribute :row_number, :size => 6, :position => 3, :caster => IntegerTypecaster
+
+  with_options :caster => StringTypecaster do
+    attribute :identifier, :size => 1,  :position => 1
+    attribute :text,       :size => 20, :position => 2
+  end
 end
 
 class ObjectRow
   include Typecaster
 
-  attribute :identifier, :size => 1, :caster => StringTypecaster
-  attribute :amount, :size => 5, :caster => IntegerTypecaster
-  attribute :person, :size => 15, :caster => StringTypecaster
-  attribute :row_number, :size => 6, :caster => IntegerTypecaster
+  with_options :caster => StringTypecaster do
+    attribute :identifier, :size => 1,  :position => 1
+    attribute :person,     :size => 15, :position => 3
+  end
+
+  with_options :caster => IntegerTypecaster do
+    attribute :amount,     :size => 5, :position => 2
+    attribute :row_number, :size => 6, :position => 4
+  end
 end
 
 class ObjectFooter
   include Typecaster
 
-  attribute :identifier, :size => 1, :caster => StringTypecaster
-  attribute :total, :size => 5, :caster => IntegerTypecaster
-  attribute :filler, :size => 15, :caster => StringTypecaster
-  attribute :row_number, :size => 6, :caster => IntegerTypecaster
+  with_options :caster => StringTypecaster do
+    attribute :identifier, :size => 1,  :position => 1
+    attribute :filler,     :size => 15, :position => 3
+  end
+
+  with_options :caster => IntegerTypecaster do
+    attribute :total,      :size => 5, :position => 2
+    attribute :row_number, :size => 6, :position => 4
+  end
 end
 
 class ObjectFile

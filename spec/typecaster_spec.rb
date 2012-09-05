@@ -23,9 +23,12 @@ end
 class ObjectFormatter
   include Typecaster
 
-  attribute :name, :size => 10, :caster => StringTypecaster
-  attribute :age, :size => 3, :caster => IntegerTypecaster
-  attribute :identification, :size => 5, :caster => StringTypecaster, :default => "*"
+  attribute :age, :size => 3, :position => 2, :caster => IntegerTypecaster
+
+  with_options :caster => StringTypecaster, :size => 10 do
+    attribute :name, :position => 1
+    attribute :identification, :position => 3, :default => "*"
+  end
 end
 
 describe Typecaster do
@@ -36,7 +39,7 @@ describe Typecaster do
       end
 
       it "should return formatted values" do
-        expect(subject.to_s).to eq "*    "
+        expect(subject.to_s).to eq "*         "
       end
     end
 
@@ -54,18 +57,18 @@ describe Typecaster do
       end
 
       it "should return identification with default value" do
-        expect(subject.attributes[:identification]).to eq "R    "
+        expect(subject.attributes[:identification]).to eq "R         "
       end
 
       it "should return formatted values" do
-        expect(subject.to_s).to eq "Ricardo   023R    "
+        expect(subject.to_s).to eq "Ricardo   023R         "
       end
     end
   end
 
   context "parsing" do
     let :text do
-      "Ricardo   023R    "
+      "Ricardo   023R         "
     end
 
     it "should parse text" do

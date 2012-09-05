@@ -1,5 +1,6 @@
 require "typecaster/version"
 require "typecaster/parser"
+require "typecaster/hash"
 
 module Typecaster
   def self.included(base)
@@ -7,11 +8,27 @@ module Typecaster
   end
 
   module ClassMethods
-    def attribute(name, options = {})
-      attribute_name = name.to_sym
+    attr_writer :options
 
-      attributes_options[attribute_name] = options
-      attributes[attribute_name] = nil
+    def attribute(name, options = {})
+      raise "missing :position key to `:#{name}`" unless options.has_key?(:position)
+
+      attribute_name, position = name.to_sym, options.delete(:position)
+
+      options.merge!(self.options)
+
+      attributes_options[position] = Hash[attribute_name => options]
+      attributes[position] = Hash[attribute_name => nil]
+    end
+
+    def with_options(options, &block)
+      self.options = options
+
+      instance_eval(&block)
+    end
+
+    def options
+      @options ||= Hash.new
     end
 
     def attributes
@@ -24,7 +41,7 @@ module Typecaster
 
     def parse(text)
       result = Hash.new
-      attributes_options.each do |attribute, options|
+      attributes_options.order.each do |attribute, options|
         result[attribute] = parse_attribute(text.slice!(0...options[:size]), options)
       end
       result
@@ -49,7 +66,7 @@ module Typecaster
   end
 
   def attributes
-    @attributes ||= self.class.attributes
+    @attributes ||= self.class.attributes.order
   end
 
   def to_s
@@ -59,7 +76,7 @@ module Typecaster
   private
 
   def attributes_options
-    @attributes_options ||= self.class.attributes_options
+    @attributes_options ||= self.class.attributes_options.order
   end
 
   def attributes_with_default
