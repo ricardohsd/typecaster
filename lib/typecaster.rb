@@ -10,6 +10,14 @@ module Typecaster
   module ClassMethods
     attr_writer :options
 
+    def with_options(options, &block)
+      self.options = options
+
+      instance_eval(&block)
+
+      self.options = Hash.new
+    end
+
     def attribute(name, options = {})
       raise "missing :position key to `:#{name}`" unless options.has_key?(:position)
 
@@ -19,12 +27,6 @@ module Typecaster
 
       attributes_options[position] = Hash[attribute_name => options]
       attributes[position] = Hash[attribute_name => nil]
-    end
-
-    def with_options(options, &block)
-      self.options = options
-
-      instance_eval(&block)
     end
 
     def options
