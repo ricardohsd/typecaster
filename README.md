@@ -36,13 +36,27 @@ Here's how to use it:
   class ProductFormatter
     include Typecaster
 
-    attribute :name, :size => 10, :class => StringTypecaster
-    attribute :price, :size => 8, :class => NumberTypecaster
-    attribute :code, :size => 6, :class => StringTypecaster
+    attribute :code,  :size => 6,  :position => 3, :caster => StringTypecaster
+    attribute :name,  :size => 10, :position => 1, :caster => StringTypecaster
+    attribute :price, :size => 8,  :position => 2, :caster => NumberTypecaster
   end
 
   product = ProductFormatter.new(:name => 'Coca', :price => '25.0', :code => '6312')
   puts product.to_s # => 'Coca      000025.06312  '
+```
+
+And you also can group the attributes with common options using `with_options` method passing a block
+```
+  class ProductFormatter
+    include Typecaster
+
+    with_options :caster => StringTypecaster do
+      attribute :code, :size => 6,  :position => 2
+      attribute :name, :size => 10, :position => 1
+    end
+
+    attribute :price, :size => 8, :position => 3, :caster => NumberTypecaster
+  end
 ```
 
 ### Reading
@@ -75,34 +89,47 @@ end
 class MyFileHeader
   include Typecaster
 
-  attribute :identifier, :size => 1, :class => StringTypecaster
-  attribute :text, :size => 20, :class => StringTypecaster
-  attribute :sequential, :size => 5, :class => IntegerTypecaster
+  with_options :caster => StringTypecaster do
+    attribute :identifier, :size => 1,  :position => 1
+    attribute :text,       :size => 20, :position => 2
+  end
+
+  attribute :sequential, :size => 5, :position => 3, :caster => IntegerTypecaster
 end
 
 class MyFileRow
   include Typecaster
 
-  attribute :identifier, :size => 1, :class => StringTypecaster
-  attribute :amount, :size => 5, :class => IntegerTypecaster
-  attribute :name, :size => 15, :class => StringTypecaster
-  attribute :sequential, :size => 5, :class => IntegerTypecaster
+  with_options :caster => StringTypecaster do
+    attribute :identifier, :size => 1,  :position => 1
+    attribute :name,       :size => 15, :position => 3
+  end
+
+  with_options :caster => IntegerTypecaster, :size => 5 do
+    attribute :amount,     :position => 2
+    attribute :sequential, :position => 4
+  end
 end
 
 class MyFileFooter
   include Typecaster
 
-  attribute :identifier, :size => 1, :class => StringTypecaster
-  attribute :total, :size => 5, :class => IntegerTypecaster
-  attribute :blanks, :size => 15, :class => StringTypecaster
-  attribute :sequential, :size => 6, :class => IntegerTypecaster
+  with_options :caster => StringTypecaster do
+    attribute :identifier, :size => 1,  :position => 1
+    attribute :blanks,     :size => 15, :position => 3
+  end
+
+  with_options :caster => IntegerTypecaster do
+    attribute :total,      :size => 5, :position => 2
+    attribute :sequential, :size => 6, :position => 4
+  end
 end
 
 class MyFileParser
   include Typecaster::Parse
 
   parser :header, :with => MyFileHeader, :identifier => '0'
-  parser :rows, :with => MyFileRow, :identifier => '1', :array => true
+  parser :rows,   :with => MyFileRow,    :identifier => '1', :array => true
   parser :footer, :with => MyFileFooter, :identifier => '9'
 end
 
