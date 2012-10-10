@@ -76,6 +76,24 @@ describe Typecaster do
       it "should return formatted values" do
         expect(subject.to_s).to eq "Ricardo   023R         "
       end
+
+      context "with a collection of values" do
+        subject do
+          ObjectFormatter.new([{ :name => "Ricardo", :age => 23, :identification => "R" }, { :name => "Cairo", :age => 26, :identification => "C" }])
+        end
+
+        let(:first_object) { ObjectFormatter.new(:name => "Ricardo", :age => 23, :identification => "R") }
+
+        let(:second_object) { ObjectFormatter.new(:name => "Cairo", :age => 26, :identification => "C") }
+
+        context "#collection" do
+          specify { expect(subject.collection).to eq [first_object, second_object] }
+          specify { expect(subject.collection.first).to eq first_object }
+          specify { expect(subject.collection.last).to eq second_object }
+        end
+
+        specify { expect(subject.to_s).to eq "Ricardo   023R         \nCairo     026C         " }
+      end
     end
 
     context "with invalid values" do
