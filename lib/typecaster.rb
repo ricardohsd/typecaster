@@ -10,18 +10,6 @@ module Typecaster
   module ClassMethods
     attr_writer :options
 
-    def output_separator(separator)
-      @output_separator = separator
-    end
-
-    def with_options(options, &block)
-      self.options = options
-
-      instance_eval(&block)
-
-      self.options = Hash.new
-    end
-
     def attribute(name, options = {})
       raise "missing :position key to `:#{name}`" unless options.has_key?(:position)
 
@@ -33,14 +21,6 @@ module Typecaster
       attributes[position] = Hash[attribute_name => nil]
     end
 
-    def options
-      @options ||= Hash.new
-    end
-
-    def separator
-      @output_separator ||= ""
-    end
-
     def attributes
       @attributes ||= Hash.new
     end
@@ -49,12 +29,32 @@ module Typecaster
       @attributes_options ||= Hash.new
     end
 
+    def output_separator(separator)
+      @output_separator = separator
+    end
+
+    def options
+      @options ||= Hash.new
+    end
+
     def parse(text)
       result = Hash.new
       attributes_options.order.each do |attribute, options|
         result[attribute] = parse_attribute(text.slice!(0...options[:size]), options)
       end
       result
+    end
+
+    def separator
+      @output_separator ||= ""
+    end
+
+    def with_options(options, &block)
+      self.options = options
+
+      instance_eval(&block)
+
+      self.options = Hash.new
     end
 
     private
@@ -66,6 +66,12 @@ module Typecaster
   end
 
   def initialize(params = {})
+    if params.is_a?(Array)
+      return params.each do |param|
+        collection << self.class.new(param)
+      end
+    end
+
     attributes_with_default.each do |key, options|
       define_value(key, options[:default])
     end
@@ -75,12 +81,24 @@ module Typecaster
     end
   end
 
+  def ==(value)
+    to_s == value.to_s
+  end
+
   def attributes
     @attributes ||= self.class.attributes.order
   end
 
+  def collection
+    @collection ||= []
+  end
+
   def to_s
-    attributes.values.join(self.class.separator)
+    if collection.any?
+      collection.map(&:to_s).join("\n")
+    else
+      attributes.values.join(self.class.separator)
+    end
   end
 
   private
@@ -93,16 +111,16 @@ module Typecaster
     attributes_options.select { |key, options| options.has_key?(:default) }
   end
 
-  def typecasted_attribute(options)
-    klass = options[:caster]
-    klass.call(options[:value], options)
-  end
-
   def define_value(name, value)
     raise "attribute #{name} is not defined" if attributes_options[name].nil?
 
     attributes_options[name][:value] = value
     value = typecasted_attribute(attributes_options[name])
     attributes[name] = value
+  end
+
+  def typecasted_attribute(options)
+    klass = options[:caster]
+    klass.call(options[:value], options)
   end
 end
