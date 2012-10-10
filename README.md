@@ -59,6 +59,34 @@ class ProductFormatter
 end
 ```
 
+You can parse a collection with values. This collection can be any object that responds to `[]`. (Hash and ActiveRecord objects are more common). See:
+```ruby
+module StringTypecaster
+  def self.call(value, options)
+    value.to_s.ljust(options[:size], " ")
+  end
+end
+
+module NumerTypecaster
+  def self.call(value, options)
+    value.to_s.rjust(options[:size], "0")
+  end
+end
+
+class ProductFormatter
+  include Typecaster
+
+  output_separator ";"
+
+  attribute :code,  :size => 6,  :position => 3, :caster => StringTypecaster
+  attribute :name,  :size => 10, :position => 1, :caster => StringTypecaster
+  attribute :price, :size => 8,  :position => 2, :caster => NumberTypecaster
+end
+
+product = ProductFormatter.new([{:name => 'Coca', :price => '25.0', :code => '6312'}, {:name => 'Coca', :price => '25.0', :code => '6312'}])
+puts product.to_s # => 'Coca      ;000025.0;6312  \nCoca      ;000025.0;6312  '
+```
+
 You can change the output separator
 ```ruby
 module StringTypecaster
