@@ -31,6 +31,19 @@ class ObjectFormatter
   end
 end
 
+class AnotherObjectFormatter
+  include Typecaster
+
+  output_separator ";"
+
+  attribute :age, :size => 3, :position => 2, :caster => IntegerTypecaster
+
+  with_options :caster => StringTypecaster, :size => 10 do
+    attribute :name, :position => 1
+    attribute :identification, :position => 3, :default => "*"
+  end
+end
+
 describe Typecaster do
   context "generating" do
     context "without values" do
