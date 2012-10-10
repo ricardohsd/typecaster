@@ -20,7 +20,7 @@ price       | 8     | 10       | 17     | number |
 code        | 6     | 18       | 23     | string |
 ```
 Here's how to use it:
-```
+```ruby
 module StringTypecaster
   def self.call(value, options)
     value.to_s.ljust(options[:size], " ")
@@ -46,7 +46,7 @@ puts product.to_s # => 'Coca      000025.06312  '
 ```
 
 And you also can group the attributes with common options using `with_options` method passing a block
-```
+```ruby
 class ProductFormatter
   include Typecaster
 
@@ -57,6 +57,34 @@ class ProductFormatter
 
   attribute :price, :size => 8, :position => 3, :caster => NumberTypecaster
 end
+```
+
+You can change the output separator
+```ruby
+module StringTypecaster
+  def self.call(value, options)
+    value.to_s.ljust(options[:size], " ")
+  end
+end
+
+module NumerTypecaster
+  def self.call(value, options)
+    value.to_s.rjust(options[:size], "0")
+  end
+end
+
+class ProductFormatter
+  include Typecaster
+
+  output_separator ";"
+
+  attribute :code,  :size => 6,  :position => 3, :caster => StringTypecaster
+  attribute :name,  :size => 10, :position => 1, :caster => StringTypecaster
+  attribute :price, :size => 8,  :position => 2, :caster => NumberTypecaster
+end
+
+product = ProductFormatter.new(:name => 'Coca', :price => '25.0', :code => '6312')
+puts product.to_s # => 'Coca      ;000025.0;6312  '
 ```
 
 ### Reading
@@ -73,7 +101,7 @@ Given a file like that:
 
 Each row in that file was identified by a number 0 for header, 1 for the records inside and 9 for footer, each row has 27 chars, to read then you must implement the parsers for each row type.
 
-```
+```ruby
 module StringTypecaster
   def self.parse(text)
     text.strip

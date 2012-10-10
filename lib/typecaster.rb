@@ -10,6 +10,10 @@ module Typecaster
   module ClassMethods
     attr_writer :options
 
+    def output_separator(separator)
+      @output_separator = separator
+    end
+
     def with_options(options, &block)
       self.options = options
 
@@ -31,6 +35,10 @@ module Typecaster
 
     def options
       @options ||= Hash.new
+    end
+
+    def separator
+      @output_separator ||= ""
     end
 
     def attributes
@@ -72,7 +80,7 @@ module Typecaster
   end
 
   def to_s
-    attributes.values.join("")
+    attributes.values.join(self.class.separator)
   end
 
   private
