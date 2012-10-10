@@ -64,6 +64,14 @@ describe Typecaster do
         expect(subject.to_s).to eq "Ricardo   023R         "
       end
     end
+
+    context "with invalid values" do
+      it "should raise an error for the invalid field" do
+        expect(lambda {
+          ObjectFormatter.new(:name => "Ricardo", :age => 23, :xpto => "R")
+        }).to raise_error("attribute xpto is not defined")
+      end
+    end
   end
 
   context "parsing" do
