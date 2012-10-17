@@ -105,13 +105,35 @@ describe Typecaster do
     end
   end
 
-  context "parsing" do
+  context "parsing a line" do
     let :text do
       "Ricardo   023R         "
     end
 
     it "should parse text" do
       expect(ObjectFormatter.parse(text)).to eq({ :name => "Ricardo", :age => 23.0, :identification => "R" })
+    end
+  end
+
+  context "parsing a file" do
+    let :file do
+      File.open("spec/fixtures/sample_uniform_file.txt", "r")
+    end
+
+    it "should parse file content" do
+      parsed_content = ObjectFormatter.parse_file(file)
+      expect(parsed_content).to eq([
+        {
+          :name => "RICARDOHEN",
+          :age => 24,
+          :identification => "123"
+        },
+        {
+          :name => "ANACLAUDIA",
+          :age => 23,
+          :identification => "222"
+        }
+      ])
     end
   end
 end
