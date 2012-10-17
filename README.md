@@ -115,7 +115,41 @@ product = ProductFormatter.new(:name => 'Coca', :price => '25.0', :code => '6312
 puts product.to_s # => 'Coca      ;000025.0;6312  '
 ```
 
-### Reading
+### Reading a uniform file
+
+Given a file with products like that:
+
+```
+Coca      000025.06312  
+Pepsi     000023.06313  
+```
+
+```ruby
+module StringTypecaster
+  def self.call(value, options)
+    value.to_s.ljust(options[:size], " ")
+  end
+end
+
+module NumerTypecaster
+  def self.call(value, options)
+    value.to_s.rjust(options[:size], "0")
+  end
+end
+
+class ProductFormatter
+  include Typecaster
+
+  attribute :code,  :size => 6,  :position => 3, :caster => StringTypecaster
+  attribute :name,  :size => 10, :position => 1, :caster => StringTypecaster
+  attribute :price, :size => 8,  :position => 2, :caster => NumberTypecaster
+end
+
+products = ProductFormatter.parse_file(File.open('your_file_path', 'r'))
+puts products.inspect # => [{:name => 'Coca', :price => '25.0', :code => '6312'}, {:name => 'Pepsi', :price => '23.0', :code => '6313'}]
+```
+
+### Reading a file containing different formats
 
 Given a file like that:
 
