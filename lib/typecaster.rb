@@ -45,6 +45,16 @@ module Typecaster
       result
     end
 
+    def parse_file(file)
+      result = []
+
+      file.each_line do |line|
+        result << parse(line)
+      end
+
+      result
+    end
+
     def separator
       @output_separator ||= ""
     end
