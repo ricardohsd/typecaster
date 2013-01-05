@@ -3,8 +3,9 @@
 This gem was built for create text files based in fixed columns.
 
 ## Instalation
-
-  gem install typecaster
+```
+gem install typecaster
+```
 
 ## Usage
 
@@ -36,13 +37,17 @@ end
 class ProductFormatter
   include Typecaster
 
-  attribute :code,  :size => 6,  :position => 3, :caster => StringTypecaster
   attribute :name,  :size => 10, :position => 1, :caster => StringTypecaster
+  attribute :code,  :size => 6,  :position => 3, :caster => StringTypecaster
   attribute :price, :size => 8,  :position => 2, :caster => NumberTypecaster
 end
 
 product = ProductFormatter.new(:name => 'Coca', :price => '25.0', :code => '6312')
-puts product.to_s # => 'Coca      000025.06312  '
+product.name   # => 'Coca      '
+product.price  # => '000025.0'
+product.code   # => '6312  '
+product.to_h   # => { :name => 'Coca      ', :price => '000025.0', :code => '6312  ' }
+product.to_s   # => 'Coca      000025.06312  '
 ```
 
 And you also can group the attributes with common options using `with_options` method passing a block
@@ -59,7 +64,10 @@ class ProductFormatter
 end
 ```
 
-You can parse a collection with values. This collection can be any object that responds to `[]`. (Hash and ActiveRecord objects are more common). See:
+You can parse a collection with values.
+This collection can be any object that responds to `[]`. (Hash and ActiveRecord objects are more common).
+Each record in the collection will be a instance of the parser object.
+See:
 ```ruby
 module StringTypecaster
   def self.call(value, options)
@@ -78,13 +86,19 @@ class ProductFormatter
 
   output_separator ";"
 
-  attribute :code,  :size => 6,  :position => 3, :caster => StringTypecaster
   attribute :name,  :size => 10, :position => 1, :caster => StringTypecaster
+  attribute :code,  :size => 6,  :position => 3, :caster => StringTypecaster
   attribute :price, :size => 8,  :position => 2, :caster => NumberTypecaster
 end
 
-product = ProductFormatter.new([{:name => 'Coca', :price => '25.0', :code => '6312'}, {:name => 'Coca', :price => '25.0', :code => '6312'}])
+product = ProductFormatter.new([
+  {:name => 'Coca', :price => '25.0', :code => '6312'},
+  {:name => 'Coca', :price => '25.0', :code => '6312'}
+])
+
 puts product.to_s # => 'Coca      ;000025.0;6312  \nCoca      ;000025.0;6312  '
+
+product.collection[0].instance_of?(ProductFormatter) # => true
 ```
 
 You can change the output separator
@@ -104,7 +118,7 @@ end
 class ProductFormatter
   include Typecaster
 
-  output_separator ";"
+  output_separator "|"
 
   attribute :code,  :size => 6,  :position => 3, :caster => StringTypecaster
   attribute :name,  :size => 10, :position => 1, :caster => StringTypecaster
@@ -112,7 +126,7 @@ class ProductFormatter
 end
 
 product = ProductFormatter.new(:name => 'Coca', :price => '25.0', :code => '6312')
-puts product.to_s # => 'Coca      ;000025.0;6312  '
+puts product.to_s # => 'Coca      |000025.0|6312  '
 ```
 
 ### Reading a uniform file
@@ -120,8 +134,8 @@ puts product.to_s # => 'Coca      ;000025.0;6312  '
 Given a file with products like that:
 
 ```
-Coca      000025.06312  
-Pepsi     000023.06313  
+Coca      000025.06312
+Pepsi     000023.06313
 ```
 
 ```ruby
@@ -140,13 +154,14 @@ end
 class ProductFormatter
   include Typecaster
 
-  attribute :code,  :size => 6,  :position => 3, :caster => StringTypecaster
   attribute :name,  :size => 10, :position => 1, :caster => StringTypecaster
+  attribute :code,  :size => 6,  :position => 3, :caster => StringTypecaster
   attribute :price, :size => 8,  :position => 2, :caster => NumberTypecaster
 end
 
 products = ProductFormatter.parse_file(File.open('your_file_path', 'r'))
-puts products.inspect # => [{:name => 'Coca', :price => '25.0', :code => '6312'}, {:name => 'Pepsi', :price => '23.0', :code => '6313'}]
+puts products.inspect # => [{:name => 'Coca', :price => '25.0', :code => '6312'},
+                      #     {:name => 'Pepsi', :price => '23.0', :code => '6313'}]
 ```
 
 ### Reading a file containing different formats
@@ -161,7 +176,7 @@ Given a file like that:
 939900               000005
 ```
 
-Each row in that file was identified by a number 0 for header, 1 for the records inside and 9 for footer, each row has 27 chars, to read then you must implement the parsers for each row type.
+Each row in that file was identified by a number, `0` for header, `1` for the records inside and `9` for footer, each row has 27 chars, to read then you must implement the parsers for each row type.
 
 ```ruby
 module StringTypecaster
@@ -223,10 +238,11 @@ class MyFileParser
   parser :footer, :with => MyFileFooter, :identifier => '9'
 end
 
-MyFileParser.parse(File.new('my_file.txt'))
+parser = MyFileParser.parse(File.new('my_file.txt'))
+parser.header # => MyFileHeader instance
+parser.rows   # => an Array with MyFileRow instances
+parser.footer # => MyFileFooter instance
 ```
-
-Its results in a hash, with keys the following keys: header, rows and footer. The key 'rows' will be an array.
 
 ## Contributing
 
