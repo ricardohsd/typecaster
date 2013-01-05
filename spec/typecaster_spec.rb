@@ -62,37 +62,23 @@ describe Typecaster do
       end
 
       it "should return formatted name" do
-        expect(subject.attributes[:name]).to eq "Ricardo   "
+        expect(subject.name).to eq "Ricardo   "
       end
 
       it "should return formatted age" do
-        expect(subject.attributes[:age]).to eq "023"
+        expect(subject.age).to eq "023"
       end
 
       it "should return identification with default value" do
-        expect(subject.attributes[:identification]).to eq "R         "
+        expect(subject.identification).to eq "R         "
       end
 
       it "should return formatted values" do
         expect(subject.to_s).to eq "Ricardo   023R         "
       end
 
-      context "with a collection of values" do
-        subject do
-          ObjectFormatter.new([{ :name => "Ricardo", :age => 23, :identification => "R" }, { :name => "Cairo", :age => 26, :identification => "C" }])
-        end
-
-        let(:first_object) { ObjectFormatter.new(:name => "Ricardo", :age => 23, :identification => "R") }
-
-        let(:second_object) { ObjectFormatter.new(:name => "Cairo", :age => 26, :identification => "C") }
-
-        context "#collection" do
-          specify { expect(subject.collection).to eq [first_object, second_object] }
-          specify { expect(subject.collection.first).to eq first_object }
-          specify { expect(subject.collection.last).to eq second_object }
-        end
-
-        specify { expect(subject.to_s).to eq "Ricardo   023R         \nCairo     026C         " }
+      it "should return a formatted hash" do
+        expect(subject.to_h).to eq(:name => "Ricardo   ", :age => "023", :identification => "R         ")
       end
     end
 
@@ -103,6 +89,27 @@ describe Typecaster do
         }).to raise_error("attribute xpto is not defined")
       end
     end
+
+    context "with a collection of values" do
+      subject do
+        ObjectFormatter.new([
+          { :name => "Ricardo", :age => 23, :identification => "R" },
+          { :name => "Cairo", :age => 26, :identification => "C" }
+        ])
+      end
+
+      let(:first_object) { ObjectFormatter.new(:name => "Ricardo", :age => 23, :identification => "R") }
+
+      let(:second_object) { ObjectFormatter.new(:name => "Cairo", :age => 26, :identification => "C") }
+
+      context "#collection" do
+        specify { expect(subject.collection).to eq [first_object, second_object] }
+        specify { expect(subject.collection.first).to eq first_object }
+        specify { expect(subject.collection.last).to eq second_object }
+      end
+
+      specify { expect(subject.to_s).to eq "Ricardo   023R         \nCairo     026C         " }
+    end
   end
 
   context "parsing a line" do
@@ -110,8 +117,58 @@ describe Typecaster do
       "Ricardo   023R         "
     end
 
-    it "should parse text" do
-      expect(ObjectFormatter.parse(text)).to eq({ :name => "Ricardo", :age => 23.0, :identification => "R" })
+    subject do
+      ObjectFormatter.parse(text)
+    end
+
+    it "should return formatted name" do
+      expect(subject.name).to eq "Ricardo"
+    end
+
+    it "should return formatted age" do
+      expect(subject.age).to eq 23.0
+    end
+
+    it "should return identification with default value" do
+      expect(subject.identification).to eq "R"
+    end
+
+    it "should return a string with the values" do
+      expect(subject.to_s).to eq "Ricardo23.0R"
+    end
+
+    it "should be equal to a hash with attributes" do
+      expect(subject).to eq(:name => "Ricardo", :age => 23.0, :identification => "R")
+    end
+  end
+
+  context "parsing multiple lines" do
+    let :content do
+      "RICARDOHEN024123\nANACLAUDIA023222"
+    end
+
+    subject(:parsed_content) do
+      ObjectFormatter.parse_file(content)
+    end
+
+    it "is a array with ObjectFormatter instances" do
+      expect(parsed_content[0]).to be_instance_of(ObjectFormatter)
+      expect(parsed_content[1]).to be_instance_of(ObjectFormatter)
+    end
+
+    it "parses the content" do
+      expect(parsed_content).to eq([
+        {
+          :name => "RICARDOHEN",
+          :age => 24,
+          :identification => "123"
+        },
+        {
+          :name => "ANACLAUDIA",
+          :age => 23,
+          :identification => "222"
+        }
+      ])
     end
   end
 
@@ -120,8 +177,16 @@ describe Typecaster do
       File.open("spec/fixtures/sample_uniform_file.txt", "r")
     end
 
-    it "should parse file content" do
-      parsed_content = ObjectFormatter.parse_file(file)
+    subject(:parsed_content) do
+      ObjectFormatter.parse_file(file)
+    end
+
+    it "is a array with ObjectFormatter instances" do
+      expect(parsed_content[0]).to be_instance_of(ObjectFormatter)
+      expect(parsed_content[1]).to be_instance_of(ObjectFormatter)
+    end
+
+    it "parses the content" do
       expect(parsed_content).to eq([
         {
           :name => "RICARDOHEN",
