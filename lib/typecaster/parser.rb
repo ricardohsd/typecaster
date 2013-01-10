@@ -6,17 +6,7 @@ module Typecaster
 
     module ClassMethods
       def parser(name, options = {})
-        parser_name = name.to_sym
-        parsers_options[parser_name] = options
-        parsers[parser_name] = nil
-      end
-
-      def parsers
-        @parsers ||= Hash.new
-      end
-
-      def parsers_options
-        @parsers_options ||= Hash.new
+        parsers_options[name.to_sym] = options
       end
 
       def parse(file)
@@ -30,9 +20,9 @@ module Typecaster
           content = line_parser.parse(line)
 
           if options[:array]
-            parsed = content
             result.merge! parser => [] unless result[parser]
 
+            parsed = content
             content = result[parser]
             content << parsed
           end
@@ -40,10 +30,14 @@ module Typecaster
           result.merge! parser => content
         end
 
-        result
+        new(result)
       end
 
       private
+
+      def parsers_options
+        @parsers_options ||= Hash.new
+      end
 
       def find_parser_by_identifier(line)
         parsers_options.each do |parser_name, options|
@@ -52,6 +46,14 @@ module Typecaster
           return parser_name unless identifier
 
           return parser_name if line.start_with? identifier
+        end
+      end
+    end
+
+    def initialize(attributes = {})
+      attributes.each do |key, value|
+        (class << self; self; end).send(:define_method, "#{key}") do
+          value
         end
       end
     end
