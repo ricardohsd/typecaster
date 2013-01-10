@@ -1,17 +1,5 @@
 require 'spec_helper'
 
-module StringTypecaster
-  def self.parse(string)
-    string.strip
-  end
-end
-
-module IntegerTypecaster
-  def self.parse(string)
-    string.to_i
-  end
-end
-
 class ObjectHeader
   include Typecaster
 
@@ -75,7 +63,7 @@ describe Typecaster::Parser do
       end
 
       it 'parses the header' do
-        expect(subject.header).to eq("0SOME IMPORTANT TEXT1")
+        expect(subject.header).to eq("0SOME IMPORTANT TEXT1.0")
         expect(subject.header).to eq(:identifier => "0", :text => "SOME IMPORTANT TEXT", :row_number => 1)
       end
     end
