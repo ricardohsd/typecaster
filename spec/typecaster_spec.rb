@@ -61,6 +61,14 @@ describe Typecaster do
         ObjectFormatter.new(:name => "Ricardo", :age => 23, :identification => "R")
       end
 
+      it "calls the caster class with the attribute options" do
+        attributes = { :default => "*", :caster => StringTypecaster, :size => 10, :value => "*", :attribute => :identification }
+
+        StringTypecaster.should_receive(:call).with("*", attributes)
+
+        ObjectFormatter.new
+      end
+
       it "should return formatted name" do
         expect(subject.attributes[:name]).to eq "Ricardo   "
       end
