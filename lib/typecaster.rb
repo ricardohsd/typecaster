@@ -125,6 +125,7 @@ module Typecaster
     raise "attribute #{name} is not defined" if attributes_options[name].nil?
 
     attributes_options[name][:value] = value
+    attributes_options[name][:attribute] = name
     value = typecasted_attribute(attributes_options[name])
     attributes[name] = value
   end
