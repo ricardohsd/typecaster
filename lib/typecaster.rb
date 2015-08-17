@@ -42,7 +42,7 @@ module Typecaster
       attributes_options.order.each do |attribute, options|
         result[attribute] = parse_attribute(text.slice!(0...options[:size]), options)
       end
-      result
+      new(result, true)
     end
 
     def parse_file(file)
@@ -75,24 +75,24 @@ module Typecaster
     end
   end
 
-  def initialize(params = {})
+  def initialize(params = {}, parsing = false)
+    @parsing = parsing
+
     if params.is_a?(Array)
       return params.each do |param|
         collection << self.class.new(param)
       end
     end
 
+    # Setup attributes with the default option
     attributes_with_default.each do |key, options|
       define_value(key, options[:default])
     end
 
+    # Assign the param to the attribute
     params.each do |key, value|
       define_value(key, value)
     end
-  end
-
-  def ==(value)
-    to_s == value.to_s
   end
 
   def attributes
@@ -101,6 +101,18 @@ module Typecaster
 
   def collection
     @collection ||= []
+  end
+
+  def ==(value)
+    if value.is_a? Hash
+      to_h == value
+    else
+      to_s == value.to_s
+    end
+  end
+
+  def to_h
+    attributes
   end
 
   def to_s
@@ -118,7 +130,7 @@ module Typecaster
   end
 
   def attributes_with_default
-    attributes_options.select { |key, options| options.has_key?(:default) }
+    attributes_options.select { |_, options| options.has_key?(:default) }
   end
 
   def define_value(name, value)
@@ -126,12 +138,20 @@ module Typecaster
 
     attributes_options[name][:value] = value
     attributes_options[name][:attribute] = name
-    value = typecasted_attribute(attributes_options[name])
+
+    unless @parsing
+      value = typecasted_attribute(attributes_options[name])
+    end
+
     attributes[name] = value
+
+    (class << self; self; end).send(:define_method, "#{name}") do
+      value
+    end
   end
 
   def typecasted_attribute(options)
-    klass = options[:caster]
-    klass.call(options[:value], options)
+    caster = options[:caster]
+    caster.call(options[:value], options)
   end
 end
